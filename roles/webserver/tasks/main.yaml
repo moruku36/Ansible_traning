@@ -1,0 +1,34 @@
+---
+- name: Webサーバーパッケージをインストール
+  package:
+    name: nginx
+    state: present
+
+- name: Nginx設定ファイルを作成
+  template:
+    src: nginx.conf.j2
+    dest: /etc/nginx/nginx.conf
+    mode: '0644'
+  notify: restart nginx
+
+- name: Webサイトディレクトリを作成
+  file:
+    path: /var/www/html
+    state: directory
+    mode: '0755'
+
+- name: サンプルHTMLファイルを作成
+  copy:
+    content: |
+      <!DOCTYPE html>
+      <html>
+      <head>
+          <title>Ansible学習サイト</title>
+      </head>
+      <body>
+          <h1>AnsibleでデプロイされたWebサイト</h1>
+          <p>このサイトはAnsibleで自動構築されました。</p>
+      </body>
+      </html>
+    dest: /var/www/html/index.html
+    mode: '0644' 

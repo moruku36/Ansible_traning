@@ -1,0 +1,29 @@
+---
+- name: システムパッケージを更新
+  package:
+    name: "{{ item }}"
+    state: latest
+  loop:
+    - curl
+    - wget
+    - vim
+    - htop
+
+- name: 共通ディレクトリを作成
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: '0755'
+  loop:
+    - /opt/app
+    - /var/log/app
+    - /etc/app
+
+- name: 共通設定ファイルを作成
+  copy:
+    content: |
+      # 共通設定
+      log_level: info
+      timezone: UTC
+    dest: /etc/app/common.conf
+    mode: '0644' 

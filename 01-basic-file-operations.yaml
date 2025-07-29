@@ -1,0 +1,38 @@
+---
+- name: 基本的なファイル操作の学習
+  hosts: localhost
+  gather_facts: false
+  
+  tasks:
+    - name: ディレクトリを作成
+      file:
+        path: /tmp/ansible_training
+        state: directory
+        mode: '0755'
+    
+    - name: テキストファイルを作成
+      copy:
+        content: |
+          Ansible学習用ファイル
+          作成日時: {{ ansible_date_time.iso8601 }}
+          ホスト名: {{ ansible_hostname }}
+        dest: /tmp/ansible_training/hello.txt
+        mode: '0644'
+    
+    - name: ファイルの存在確認
+      stat:
+        path: /tmp/ansible_training/hello.txt
+      register: file_info
+    
+    - name: ファイル情報を表示
+      debug:
+        msg: "ファイルサイズ: {{ file_info.stat.size }} バイト"
+    
+    - name: ファイルの内容を読み取り
+      slurp:
+        src: /tmp/ansible_training/hello.txt
+      register: file_content
+    
+    - name: ファイル内容を表示
+      debug:
+        msg: "ファイル内容: {{ file_content.content | b64decode }}" 

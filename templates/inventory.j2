@@ -1,0 +1,28 @@
+# {{ app_name }} インベントリファイル
+# 生成日時: {{ ansible_date_time.iso8601 }}
+
+[webservers]
+{% for server in servers %}
+{% if 'web' in server.name %}
+{{ server.name }} ansible_host={{ server.ip }} ansible_port=22
+{% endif %}
+{% endfor %}
+
+[dbservers]
+{% for server in servers %}
+{% if 'db' in server.name %}
+{{ server.name }} ansible_host={{ server.ip }} ansible_port=22
+{% endif %}
+{% endfor %}
+
+[all:vars]
+ansible_user=admin
+ansible_ssh_private_key_file=~/.ssh/id_rsa
+ansible_python_interpreter=/usr/bin/python3
+
+[webservers:vars]
+http_port=80
+https_port=443
+
+[dbservers:vars]
+db_port={{ database.port }} 

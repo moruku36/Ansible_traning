@@ -1,0 +1,128 @@
+---
+- name: Docker環境の構築
+  hosts: localhost
+  gather_facts: false
+  
+  vars:
+    docker_compose_version: "2.20.0"
+    app_name: "myapp"
+    app_port: 8080
+  
+  tasks:
+    - name: Dockerパッケージをインストール
+      package:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - docker
+        - docker-compose
+        - python3-pip
+    
+    - name: Dockerサービスを開始
+      service:
+        name: docker
+        state: started
+        enabled: yes
+    
+    - name: 現在のユーザーをdockerグループに追加
+      user:
+        name: "{{ ansible_user }}"
+        groups: docker
+        append: yes
+    
+    - name: アプリケーションディレクトリを作成
+      file:
+        path: "{{ item }}"
+        state: directory
+        mode: '0755'
+      loop:
+        - /opt/{{ app_name }}
+        - /opt/{{ app_name }}/src
+        - /opt/{{ app_name }}/config
+    
+    - name: Dockerfileを作成
+      copy:
+        content: |
+          FROM python:3.9-slim
+          
+          WORKDIR /app
+          
+          COPY requirements.txt .
+          RUN pip install -r requirements.txt
+          
+          COPY src/ .
+          
+          EXPOSE {{ app_port }}
+          
+          CMD ["python", "app.py"]
+        dest: /opt/{{ app_name }}/Dockerfile
+        mode: '0644'
+    
+    - name: requirements.txtを作成
+      copy:
+        content: |
+          flask==2.3.3
+          requests==2.31.0
+        dest: /opt/{{ app_name }}/requirements.txt
+        mode: '0644'
+    
+    - name: Pythonアプリケーションを作成
+      copy:
+        content: |
+          from flask import Flask, jsonify
+          import os
+          
+          app = Flask(__name__)
+          
+          @app.route('/')
+          def hello():
+              return jsonify({
+                  'message': 'Hello from Ansible-managed Docker container!',
+                  'hostname': os.uname().nodename,
+                  'timestamp': '{{ ansible_date_time.iso8601 }}'
+              })
+          
+          @app.route('/health')
+          def health():
+              return jsonify({'status': 'healthy'})
+          
+          if __name__ == '__main__':
+              app.run(host='0.0.0.0', port={{ app_port }})
+        dest: /opt/{{ app_name }}/src/app.py
+        mode: '0644'
+    
+    - name: docker-compose.ymlを作成
+      copy:
+        content: |
+          version: '3.8'
+          
+          services:
+            {{ app_name }}:
+              build: .
+              ports:
+                - "{{ app_port }}:{{ app_port }}"
+              environment:
+                - FLASK_ENV=development
+              volumes:
+                - ./src:/app
+              restart: unless-stopped
+        dest: /opt/{{ app_name }}/docker-compose.yml
+        mode: '0644'
+    
+    - name: Dockerイメージをビルド
+      command: docker build -t {{ app_name }} .
+      args:
+        chdir: /opt/{{ app_name }}
+    
+    - name: Dockerコンテナを起動
+      command: docker-compose up -d
+      args:
+        chdir: /opt/{{ app_name }}
+    
+    - name: コンテナの状態を確認
+      command: docker ps
+      register: docker_ps
+    
+    - name: コンテナ一覧を表示
+      debug:
+        msg: "{{ docker_ps.stdout_lines }}" 

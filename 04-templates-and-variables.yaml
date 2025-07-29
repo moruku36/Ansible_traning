@@ -1,0 +1,58 @@
+---
+- name: テンプレートと変数の学習
+  hosts: localhost
+  gather_facts: false
+  
+  vars:
+    app_name: "myapp"
+    app_version: "1.0.0"
+    database:
+      host: "localhost"
+      port: 5432
+      name: "mydb"
+      user: "dbuser"
+    environment: "development"
+    servers:
+      - name: "web1"
+        ip: "192.168.1.10"
+        port: 80
+      - name: "web2"
+        ip: "192.168.1.11"
+        port: 80
+      - name: "db1"
+        ip: "192.168.1.20"
+        port: 5432
+  
+  tasks:
+    - name: 変数の値を表示
+      debug:
+        msg: |
+          アプリケーション名: {{ app_name }}
+          バージョン: {{ app_version }}
+          環境: {{ environment }}
+    
+    - name: データベース設定を表示
+      debug:
+        msg: |
+          データベース設定:
+          - ホスト: {{ database.host }}
+          - ポート: {{ database.port }}
+          - データベース名: {{ database.name }}
+          - ユーザー: {{ database.user }}
+    
+    - name: サーバーリストを表示
+      debug:
+        msg: "サーバー: {{ item.name }} ({{ item.ip }}:{{ item.port }})"
+      loop: "{{ servers }}"
+    
+    - name: 設定ファイルテンプレートを作成
+      template:
+        src: app.conf.j2
+        dest: /tmp/ansible_training/{{ app_name }}.conf
+        mode: '0644'
+    
+    - name: インベントリファイルテンプレートを作成
+      template:
+        src: inventory.j2
+        dest: /tmp/ansible_training/inventory.ini
+        mode: '0644' 

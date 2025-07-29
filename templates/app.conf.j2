@@ -1,0 +1,25 @@
+# {{ app_name }} 設定ファイル
+# 生成日時: {{ ansible_date_time.iso8601 }}
+# 環境: {{ environment }}
+
+[application]
+name = {{ app_name }}
+version = {{ app_version }}
+environment = {{ environment }}
+
+[database]
+host = {{ database.host }}
+port = {{ database.port }}
+name = {{ database.name }}
+user = {{ database.user }}
+
+[servers]
+{% for server in servers %}
+[server.{{ server.name }}]
+ip = {{ server.ip }}
+port = {{ server.port }}
+{% endfor %}
+
+[logging]
+level = {% if environment == 'production' %}error{% else %}debug{% endif %}
+file = /var/log/{{ app_name }}.log 

@@ -1,0 +1,74 @@
+---
+- name: ハンドラーとエラー処理の学習
+  hosts: localhost
+  gather_facts: false
+  
+  tasks:
+    - name: 設定ファイルを作成
+      copy:
+        content: |
+          # アプリケーション設定
+          port: 8080
+          debug: true
+          log_level: info
+        dest: /tmp/ansible_training/app.conf
+        mode: '0644'
+      notify: restart application
+    
+    - name: 設定ファイルを更新
+      copy:
+        content: |
+          # アプリケーション設定（更新版）
+          port: 9090
+          debug: false
+          log_level: warn
+        dest: /tmp/ansible_training/app.conf
+        mode: '0644'
+      notify: restart application
+    
+    - name: 存在しないファイルを削除（エラーを無視）
+      file:
+        path: /tmp/ansible_training/nonexistent.txt
+        state: absent
+      ignore_errors: yes
+    
+    - name: エラーが発生した場合の処理
+      debug:
+        msg: "前のタスクでエラーが発生しましたが、処理を続行します"
+      when: ansible_failed_tasks is defined
+    
+    - name: 条件付きタスク（失敗を許可）
+      command: echo "このタスクは失敗する可能性があります"
+      failed_when: false
+    
+    - name: ブロックを使用したエラー処理
+      block:
+        - name: 重要なタスク1
+          debug:
+            msg: "重要な処理1を実行中"
+        
+        - name: 重要なタスク2
+          debug:
+            msg: "重要な処理2を実行中"
+        
+        - name: 意図的に失敗するタスク
+          fail:
+            msg: "このタスクは意図的に失敗します"
+      rescue:
+        - name: エラーが発生した場合の復旧処理
+          debug:
+            msg: "エラーが発生しました。復旧処理を実行します"
+        
+        - name: ログファイルを作成
+          copy:
+            content: "エラーが発生しました: {{ ansible_date_time.iso8601 }}"
+            dest: /tmp/ansible_training/error.log
+      always:
+        - name: 常に実行される処理
+          debug:
+            msg: "この処理は常に実行されます"
+  
+  handlers:
+    - name: restart application
+      debug:
+        msg: "アプリケーションを再起動します" 

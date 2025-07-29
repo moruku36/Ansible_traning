@@ -1,0 +1,56 @@
+---
+- name: 条件分岐とループの学習
+  hosts: localhost
+  gather_facts: false
+  
+  vars:
+    users:
+      - name: alice
+        role: admin
+        active: true
+      - name: bob
+        role: user
+        active: false
+      - name: charlie
+        role: user
+        active: true
+    os_type: "{{ ansible_os_family | default('unknown') }}"
+  
+  tasks:
+    - name: OS情報を表示
+      debug:
+        msg: "現在のOS: {{ os_type }}"
+    
+    - name: Linuxの場合の処理
+      debug:
+        msg: "Linuxシステムです"
+      when: os_type == "RedHat" or os_type == "Debian"
+    
+    - name: macOSの場合の処理
+      debug:
+        msg: "macOSシステムです"
+      when: os_type == "Darwin"
+    
+    - name: ユーザーリストを表示（ループ）
+      debug:
+        msg: "ユーザー: {{ item.name }}, 役割: {{ item.role }}"
+      loop: "{{ users }}"
+    
+    - name: アクティブなユーザーのみ表示
+      debug:
+        msg: "アクティブユーザー: {{ item.name }}"
+      loop: "{{ users }}"
+      when: item.active
+    
+    - name: 管理者ユーザーのみ表示
+      debug:
+        msg: "管理者: {{ item.name }}"
+      loop: "{{ users }}"
+      when: item.role == "admin"
+    
+    - name: 条件付きファイル作成
+      copy:
+        content: "{{ item.name }}の設定ファイル"
+        dest: "/tmp/ansible_training/{{ item.name }}.conf"
+      loop: "{{ users }}"
+      when: item.active 

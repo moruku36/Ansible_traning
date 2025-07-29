@@ -1,0 +1,8 @@
+---
+- hosts: localhost
+  tasks:
+    - name: Create a sample text file
+      copy:
+        content: "Hello, World!\n"
+        dest: "/tmp/hello.txt"
+      

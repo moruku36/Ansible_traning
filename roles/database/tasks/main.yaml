@@ -1,0 +1,41 @@
+---
+- name: データベースパッケージをインストール
+  package:
+    name: sqlite3
+    state: present
+
+- name: データベースディレクトリを作成
+  file:
+    path: /var/lib/app
+    state: directory
+    mode: '0755'
+    owner: "{{ ansible_user }}"
+
+- name: データベースファイルを作成
+  copy:
+    content: ""
+    dest: /var/lib/app/app.db
+    mode: '0644'
+    owner: "{{ ansible_user }}"
+
+- name: データベース初期化スクリプトを作成
+  copy:
+    content: |
+      CREATE TABLE IF NOT EXISTS users (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          name TEXT NOT NULL,
+          email TEXT UNIQUE NOT NULL,
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+      
+      INSERT OR IGNORE INTO users (name, email) VALUES 
+          ('Alice', 'alice@example.com'),
+          ('Bob', 'bob@example.com'),
+          ('Charlie', 'charlie@example.com');
+    dest: /var/lib/app/init.sql
+    mode: '0644'
+    owner: "{{ ansible_user }}"
+
+- name: データベースを初期化
+  command: sqlite3 /var/lib/app/app.db < /var/lib/app/init.sql
+  become: no 

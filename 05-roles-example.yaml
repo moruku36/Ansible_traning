@@ -1,0 +1,10 @@
+---
+- name: ロールを使用したWebアプリケーションのデプロイ
+  hosts: localhost
+  gather_facts: false
+  
+  roles:
+    - common
+    - webserver
+    - database
+    - application 
