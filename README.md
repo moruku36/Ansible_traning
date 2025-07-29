@@ -134,4 +134,4 @@ sudo ansible-playbook -i hosts.ini 06-docker-environment.yaml
 
 - [Ansible公式ドキュメント](https://docs.ansible.com/)
 - [Ansible Best Practices](https://docs.ansible.com/ansible/latest/user_guide/playbooks_best_practices.html)
-- [Jinja2テンプレート](https://jinja.palletsprojects.com/) 
+- [Jinja2テンプレート](https://jinja.palletsprojects.com/)
