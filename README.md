@@ -1,137 +1,177 @@
-# Ansible学習用リポジトリ
+# 📈 日本株価データ取得アプリ
 
-このリポジトリは、Ansibleの学習を目的として作成された例題集です。段階的にAnsibleの機能を学べるように構成されています。
+[GMO NIKKOの技術ブログ](https://techblog.gmo-ap.jp/2022/06/07/pythonstockdata/)を参考に作成した、日本の株価データをリアルタイムで取得・可視化するPythonアプリケーションです。
 
-## 前提条件
+## 🚀 機能
 
-- Ansible 2.9以上がインストールされていること
-- macOS/Linux環境（Windowsの場合はWSL推奨）
+### 📊 株価データ取得
+- **Stooq**からの株価データ取得
+- **Yahoo Finance**からの株価データ取得
+- **リアルタイム株価**の取得
+- **複数銘柄**の一括取得
 
-## ファイル構成
+### 📈 データ可視化
+- キャンドルスティックチャート
+- 出来高チャート
+- 複数銘柄比較チャート
+- リアルタイム価格表示
 
-### 基本例題
-- `01-basic-file-operations.yaml` - 基本的なファイル操作
-- `02-conditions-and-loops.yaml` - 条件分岐とループ
-- `03-handlers-and-error-handling.yaml` - ハンドラーとエラー処理
-- `04-templates-and-variables.yaml` - テンプレートと変数
+### 💾 データ管理
+- CSVファイルでのデータ保存
+- データダウンロード機能
+- 統計情報の表示
 
-### ロール例題
-- `05-roles-example.yaml` - ロールを使用した構成管理
-- `roles/` - ロールディレクトリ
-  - `common/` - 共通設定ロール
-  - `webserver/` - Webサーバーロール
+## 📋 対応銘柄
 
-### 実践例題
-- `06-docker-environment.yaml` - Docker環境の構築
+主要な日本株15銘柄に対応：
 
-### テンプレート
-- `templates/` - Jinja2テンプレートファイル
+| 銘柄コード | 会社名 |
+|-----------|--------|
+| 7203 | トヨタ自動車 |
+| 6758 | ソニーグループ |
+| 9984 | ソフトバンクグループ |
+| 6861 | キーエンス |
+| 6954 | ファナック |
+| 7974 | 任天堂 |
+| 8306 | 三菱UFJフィナンシャル・グループ |
+| 9433 | KDDI |
+| 9432 | NTT |
+| 4502 | 武田薬品工業 |
+| 6501 | 日立製作所 |
+| 6502 | 東芝 |
+| 6752 | パナソニック |
+| 7267 | ホンダ |
+| 7733 | オリンパス |
 
-## 学習順序
+## 🛠️ インストール
 
-### 1. 基本概念の理解
+### 1. リポジトリのクローン
 ```bash
-# 基本的なファイル操作
-ansible-playbook -i hosts.ini 01-basic-file-operations.yaml
-
-# 条件分岐とループ
-ansible-playbook -i hosts.ini 02-conditions-and-loops.yaml
-
-# ハンドラーとエラー処理
-ansible-playbook -i hosts.ini 03-handlers-and-error-handling.yaml
+git clone <repository-url>
+cd japanese-stock-data-app
 ```
 
-### 2. テンプレートと変数
+### 2. 依存関係のインストール
 ```bash
-# テンプレートと変数の使用
-ansible-playbook -i hosts.ini 04-templates-and-variables.yaml
+pip install -r requirements.txt
 ```
 
-### 3. ロールの理解
+## 🎯 使用方法
+
+### 1. コマンドライン版
 ```bash
-# ロールを使用した構成管理
-ansible-playbook -i hosts.ini 05-roles-example.yaml
+python main.py
 ```
 
-### 4. 実践的な例題
+**機能:**
+- 単一銘柄の株価データ取得（Stooq/Yahoo Finance）
+- リアルタイム株価取得
+- 複数銘柄の一括取得
+- 主要銘柄のリアルタイム株価表示
+
+### 2. Webアプリケーション版
 ```bash
-# Docker環境の構築（注意：管理者権限が必要）
-sudo ansible-playbook -i hosts.ini 06-docker-environment.yaml
+streamlit run streamlit_app.py
 ```
 
-## 学習のポイント
+**機能:**
+- 📊 株価チャート（キャンドルスティック）
+- 💰 リアルタイム株価
+- 📈 複数銘柄比較
+- 📋 データダウンロード
 
-### 各例題で学べること
+## 📁 ファイル構成
 
-#### 01-basic-file-operations.yaml
-- `file`モジュールによるディレクトリ作成
-- `copy`モジュールによるファイル作成
-- `stat`モジュールによるファイル情報取得
-- `slurp`モジュールによるファイル内容読み取り
-- `debug`モジュールによる情報表示
+```
+japanese-stock-data-app/
+├── requirements.txt          # 依存関係
+├── stock_data_fetcher.py     # 株価データ取得クラス
+├── main.py                   # コマンドライン版メイン
+├── streamlit_app.py          # Webアプリケーション版
+├── example_usage.py          # 使用例
+├── README.md                 # このファイル
+└── stock_data/               # データ保存ディレクトリ（自動作成）
+```
 
-#### 02-conditions-and-loops.yaml
-- `when`条件による条件分岐
-- `loop`による繰り返し処理
-- 変数の定義と使用
-- 複雑な条件式
+## 🔧 技術仕様
 
-#### 03-handlers-and-error-handling.yaml
-- `notify`によるハンドラー呼び出し
-- `ignore_errors`によるエラー無視
-- `block`/`rescue`/`always`によるエラー処理
-- `fail`モジュールによる意図的な失敗
+### 使用ライブラリ
+- **pandas**: データ処理
+- **pandas-datareader**: 株価データ取得
+- **yfinance**: Yahoo Finance API
+- **streamlit**: Webアプリケーション
+- **plotly**: インタラクティブチャート
+- **matplotlib**: グラフ描画
 
-#### 04-templates-and-variables.yaml
-- Jinja2テンプレートの使用
-- 複雑な変数構造
-- テンプレート内でのループと条件分岐
+### データソース
+- **Stooq**: ポーランドの金融データサイト
+- **Yahoo Finance**: 米国Yahoo Finance
 
-#### 05-roles-example.yaml
-- ロールの構造と使用方法
-- ロール間の依存関係
-- ハンドラーの定義
+### 取得データ
+- Date: 日付
+- Open: 始値
+- High: 高値
+- Low: 安値
+- Close: 終値
+- Volume: 出来高
+- Adj Close: 調整後終値（Yahoo Financeのみ）
 
-#### 06-docker-environment.yaml
-- 実践的なアプリケーションデプロイ
-- Dockerとの連携
-- 複雑なタスクの組み合わせ
+## 📊 使用例
 
-## 実行時の注意点
+### 基本的な株価データ取得
+```python
+from stock_data_fetcher import JapaneseStockDataFetcher
 
-1. **権限**: 一部の例題は管理者権限が必要です
-2. **環境依存**: macOSとLinuxで動作が異なる場合があります
-3. **ネットワーク**: Docker例題はインターネット接続が必要です
+# インスタンス作成
+fetcher = JapaneseStockDataFetcher()
 
-## トラブルシューティング
+# Stooqからトヨタ自動車のデータを取得
+df = fetcher.get_stock_data_stooq("7203", "2024-01-01", "2024-12-31")
 
-### よくある問題
+# Yahoo Financeからリアルタイムデータを取得
+realtime_data = fetcher.get_realtime_price("7203")
+```
 
-1. **権限エラー**
-   ```bash
-   sudo ansible-playbook -i hosts.ini [プレイブック名]
-   ```
+### 複数銘柄の一括取得
+```python
+# 主要銘柄の一括取得
+stocks = ["7203", "6758", "9984"]
+results = fetcher.get_multiple_stocks(stocks, source="yahoo")
+```
 
-2. **モジュールが見つからない**
-   ```bash
-   pip install ansible[all]
-   ```
+## ⚠️ 注意事項
 
-3. **テンプレートエラー**
-   - テンプレートファイルの構文を確認
-   - 変数名のスペルを確認
+1. **データソースの制限**
+   - リアルタイムデータは取引時間外の場合、前日終値が表示されます
+   - 一部の銘柄でデータが取得できない場合があります
 
-## 次のステップ
+2. **利用制限**
+   - データソースの利用規約に従ってください
+   - 過度なリクエストは避けてください
 
-この例題を理解した後は、以下のような実践的なプロジェクトに挑戦してみてください：
+3. **投資判断**
+   - このアプリケーションは学習・研究目的です
+   - 投資判断には十分な調査を行ってください
 
-1. 本格的なWebアプリケーションのデプロイ
-2. 複数サーバー環境の構築
-3. CI/CDパイプラインとの連携
-4. クラウド環境でのAnsible活用
+## 🤝 貢献
 
-## 参考資料
+1. このリポジトリをフォーク
+2. 機能ブランチを作成 (`git checkout -b feature/AmazingFeature`)
+3. 変更をコミット (`git commit -m 'Add some AmazingFeature'`)
+4. ブランチにプッシュ (`git push origin feature/AmazingFeature`)
+5. プルリクエストを作成
 
-- [Ansible公式ドキュメント](https://docs.ansible.com/)
-- [Ansible Best Practices](https://docs.ansible.com/ansible/latest/user_guide/playbooks_best_practices.html)
-- [Jinja2テンプレート](https://jinja.palletsprojects.com/)
+## 📄 ライセンス
+
+このプロジェクトはMITライセンスの下で公開されています。
+
+## 🙏 謝辞
+
+- [GMO NIKKO エンジニアブログ](https://techblog.gmo-ap.jp/2022/06/07/pythonstockdata/) - 参考資料
+- [pandas-datareader](https://pandas-datareader.readthedocs.io/) - データ取得ライブラリ
+- [yfinance](https://github.com/ranaroussi/yfinance) - Yahoo Finance API
+- [Streamlit](https://streamlit.io/) - Webアプリケーションフレームワーク
+
+## 📞 サポート
+
+問題や質問がある場合は、GitHubのIssuesページでお知らせください。
