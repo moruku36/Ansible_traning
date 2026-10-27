@@ -55,8 +55,8 @@ AnsibleのPlaybook・Roleと、Stooq・Yahoo Financeから日本株データを�
 
 ### 1. リポジトリのクローン
 ```bash
-git clone <repository-url>
-cd japanese-stock-data-app
+git clone https://github.com/moruku36/Ansible_traning.git
+cd Ansible_traning
 ```
 
 ### 2. 依存関係のインストール
